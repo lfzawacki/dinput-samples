@@ -31,7 +31,6 @@ enumCallback(const DIDEVICEINSTANCE* instance, VOID* context)
 
     LPDIRECTINPUT8 lpdi = (LPDIRECTINPUT8) context;
 
-    // Obtain an interface to the enumerated joystick.
     hr = lpdi->CreateDevice(instance->guidInstance, &gDevices[numDevices], NULL);
 
     if(SUCCEEDED(hr)) {
@@ -55,7 +54,7 @@ int WINAPI WinMain( HINSTANCE hCopy, HINSTANCE hCopyAnt, PSTR szCmd, int iShow)
 
     HRNAME(hr);
 
-    hr = lpdi->EnumDevices(DI8DEVCLASS_ALL, enumCallback, lpdi, DIEDFL_ATTACHEDONLY);
+    hr = lpdi->EnumDevices(DI8DEVCLASS_ALL, enumCallback, lpdi, DIEDFL_ALLDEVICES);
 
     return 0;
 }

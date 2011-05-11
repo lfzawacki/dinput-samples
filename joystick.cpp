@@ -1,13 +1,32 @@
 #include <windows.h>
 #include <stdio.h>
-#include <dinput.h>
+#include "dinput.h"
 
 #include "debug.h"
+
+//Code adapted from http://www.cs.cmu.edu/~jparise/code/joystick/
 
 LPDIRECTINPUTDEVICE8 joystick = NULL;
 LPDIRECTINPUT8 di;
 
 static DIACTIONFORMAT g_ActionFormat;
+
+HWND hwnd;
+
+void _dump_joy(DIJOYSTATE* st)
+{
+    printf("Ax: (%d,%d,%d)\nRAx: (%d,%d,%d)\nSlider: (%d,%d)\nPov: (%d,%d,%d,%d)\n\n",
+                st->lX,st->lY,st->lZ,st->lRx,st->lRy,st->lRz,
+                st->rglSlider[0],st->rglSlider[1],
+                st->rgdwPOV[0],st->rgdwPOV[1],st->rgdwPOV[2],st->rgdwPOV[3]
+           );
+
+    for(int i=0; i<32; i++) {
+        printf("%c",st->rgbButtons[i] ? 'o' : 'x');
+    }
+
+    printf("\n");
+}
 
 BOOL CALLBACK
 enumCallback(const DIDEVICEINSTANCE* instance, VOID* context)
@@ -28,7 +47,7 @@ enumCallback(const DIDEVICEINSTANCE* instance, VOID* context)
         return DIENUM_CONTINUE;
     }
 
-    return DIENUM_CONTINUE;
+    return DIENUM_STOP;
 }
 
 BOOL CALLBACK
@@ -53,7 +72,7 @@ enumAxesCallback(const DIDEVICEOBJECTINSTANCE* instance, VOID* context)
 }
 
 HRESULT
-poll(DIJOYSTATE2 *js)
+poll(DIJOYSTATE *js)
 {
     HRESULT  hr;
 
@@ -86,7 +105,7 @@ poll(DIJOYSTATE2 *js)
     }
 
     // Get the input's device state
-    if (FAILED(hr = joystick->GetDeviceState(sizeof(DIJOYSTATE2), js))) {
+    if (FAILED(hr = joystick->GetDeviceState(sizeof(DIJOYSTATE), js))) {
         return hr; // The device should have been acquired during the Poll()
     }
 
@@ -100,6 +119,10 @@ int main (int argc, char const* argv[])
 
     HRESULT hr;
 
+    HWND hwnd = CreateWindow("static", "Test", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                   10, 10, 200, 200, NULL, NULL, NULL, NULL);
+
+
     // Create a DirectInput device
     if (FAILED(hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION,
                                        IID_IDirectInput8, (VOID**)&di, NULL))) {
@@ -108,7 +131,7 @@ int main (int argc, char const* argv[])
     }
 
     // Look for the first simple joystick we can find.
-    if (FAILED(hr = di->EnumDevices(DI8DEVCLASS_ALL, enumCallback,
+    if (FAILED(hr = di->EnumDevices(DI8DEVCLASS_GAMECTRL, enumCallback,
                                     NULL, DIEDFL_ATTACHEDONLY))) {
         HRNAME(hr);
         return 1;
@@ -127,14 +150,14 @@ int main (int argc, char const* argv[])
     // A data format specifies which controls on a device we are interested in,
     // and how they should be reported. This tells DInput that we will be
     // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-    if (FAILED(hr = joystick->SetDataFormat(&c_dfDIJoystick2))) {
+    if (FAILED(hr = joystick->SetDataFormat(&c_dfDIJoystick))) {
         HRNAME(hr);
         return 1;
     }
 
     // Set the cooperative level to let DInput know how this device should
     // interact with the system and with other DInput applications.
-    if (FAILED(hr = joystick->SetCooperativeLevel(NULL, DISCL_EXCLUSIVE |
+    if (FAILED(hr = joystick->SetCooperativeLevel(hwnd, DISCL_EXCLUSIVE |
                                                   DISCL_FOREGROUND))) {
         HRNAME(hr);
         return 1;
@@ -157,13 +180,16 @@ int main (int argc, char const* argv[])
         return 1;
     }
 
-    hr= joystick->BuildActionMap(&g_ActionFormat, NULL, DIDBAM_DEFAULT);
+//    hr= joystick->BuildActionMap(&g_ActionFormat, NULL, DIDBAM_DEFAULT);
 
-//    DIJOYSTATE2 state;
+    DIJOYSTATE state;
 
-//    while (!poll(&state) || true) {
-//        printf("State = %d\n",state.lX);
-//    }
+    while (!poll(&state) ) {
+        printf("-------------\n");
+        _dump_joy(&state);
+        printf("-------------\n");
+        Sleep(2000);
+    }
 
     if (joystick) {
         joystick->Unacquire();

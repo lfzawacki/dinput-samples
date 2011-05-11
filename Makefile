@@ -14,6 +14,9 @@ dump_devices:
 enum_semantics:
 	$(CC)  -o $@.exe $@.cpp -ldinput8 -ldxguid
 
+setactionmap:
+	$(CC)  -o $@.exe $@.cpp -ldinput8 -ldxguid
+
 copy:
 	cp *.exe  ~/Desktop/Dropbox/windows
 
