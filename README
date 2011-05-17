@@ -1,0 +1,14 @@
+
+Lot's of examples of how the DirectInput 8 interface works.
+
+To make type
+
+$ make <filename>
+
+Where <filename> is the name of one of .cpp files contained in this repository (without the extension)
+
+This includes code from the following sources:
+
+* http://www.cs.cmu.edu/~jparise/code/joystick/
+* http://code.google.com/p/dolphin-emu/
+

@@ -28,6 +28,19 @@ void _dump_joy(DIJOYSTATE* st)
     printf("\n");
 }
 
+void _dump_cap(DIDEVCAPS *cap)
+{
+
+    printf("dwFlags: %d\nType %X Sub: %X\ndwAxes: %d\ndwButtons: %d\ndwPOVs: %d\ndwFFSamplePeriod: %d\n\
+dwFFMinTimeResolution: %d\ndwFirmwareRevision: %d\n\
+dwHardwareRevision: %d\ndwFFDriverVersion: %d\n",
+            cap->dwFlags,GET_DIDEVICE_TYPE(cap->dwDevType),GET_DIDEVICE_SUBTYPE(cap->dwDevType),
+            cap->dwAxes,cap->dwButtons, cap->dwPOVs,
+            cap->dwFFSamplePeriod, cap->dwFFMinTimeResolution, cap->dwFirmwareRevision,
+            cap->dwHardwareRevision, cap->dwFFDriverVersion);
+
+}
+
 BOOL CALLBACK
 enumCallback(const DIDEVICEINSTANCE* instance, VOID* context)
 {
@@ -172,6 +185,8 @@ int main (int argc, char const* argv[])
 
     }
 
+    _dump_cap(&capabilities);
+
     // Enumerate the axes of the joyctick and set the range of each axis. Note:
     // we could just use the defaults, but we're just trying to show an example
     // of enumerating device objects (axes, buttons, etc.).
@@ -180,15 +195,24 @@ int main (int argc, char const* argv[])
         return 1;
     }
 
-//    hr= joystick->BuildActionMap(&g_ActionFormat, NULL, DIDBAM_DEFAULT);
-
     DIJOYSTATE state;
 
-    while (!poll(&state) ) {
+    // wait for any key
+    bool pressed = false;
+    printf("Press any joystick key\n");
+    while ( !poll(&state) && !pressed ) {
+        for (int i=0; i < 32 && !pressed; i++) {
+            pressed = pressed || state.rgbButtons[i];
+        }
+    }
+
+    //wait for input and dump
+    while ( !poll(&state) ) {
         printf("-------------\n");
         _dump_joy(&state);
         printf("-------------\n");
-        Sleep(2000);
+        Sleep(100);
+
     }
 
     if (joystick) {
