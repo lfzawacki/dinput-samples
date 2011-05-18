@@ -1,0 +1,7 @@
+
+This is a heavily modified version of the code the Dolphin Emulator dx9 gamepad
+plugin. It no longers makes a dll, just an executable that test for input.
+
+Original code: http://code.google.com/p/dolphin-emu/source/browse/trunk/Source/Plugins/Plugin_PadDX9/?r=669#Plugin_PadDX9
+
+For the license see: http://code.google.com/p/dolphin-emu/
