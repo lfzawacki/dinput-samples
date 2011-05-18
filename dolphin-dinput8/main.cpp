@@ -27,7 +27,6 @@ void initializeInput(HWND _hParent)
 
 void getControllerStatus(SPADStatus* _pPADStatus)
 {
-
 	//get keys from dinput
 	g_diHandler.UpdateInput();
 
