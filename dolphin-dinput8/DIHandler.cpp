@@ -20,7 +20,7 @@
 
 #include <math.h>
 
-#include "dinput.h"
+#include <dinput.h>
 #include "MultiDI.h"
 #include "DIHandler.h"
 #include <stdio.h>
@@ -55,8 +55,8 @@ DIACTION CDIHandler::m_rgGameAction[] =
 	{ CDIHandler::INPUT_BUTTON_R,		DIKEYBOARD_W,		0, TEXT("R-Trigger"),	},
 
 	// Joystick input mappings
-	{ CDIHandler::INPUT_MAIN_AXIS_LR,	DIAXIS_ARCADEP_LATERAL,	0, TEXT("Main left/right"),	},
-	{ CDIHandler::INPUT_MAIN_AXIS_UD,	DIAXIS_ARCADEP_MOVE,	0, TEXT("Main Up/Down"),		},
+	{ CDIHandler::INPUT_MAIN_AXIS_LR,	0x22008201/* DIAXIS_ARCADEP_LATERAL */,	0, TEXT("Main left/right"),	},
+	{ CDIHandler::INPUT_MAIN_AXIS_UD,	0x22010202/* DIAXIS_ARCADEP_MOVE */,	0, TEXT("Main Up/Down"),		},
 	{ CDIHandler::INPUT_CPAD_AXIS_LR,	DIAXIS_ANY_1,			0, TEXT("CPad left/right"),	},
 	{ CDIHandler::INPUT_CPAD_AXIS_UP,	DIAXIS_ANY_2,			0, TEXT("CPad Up/Down"),		},
 	{ CDIHandler::INPUT_DPAD_AXIS_LR,	DIPOV_ANY_1,			0, TEXT("DPad left/right"),	},
@@ -110,7 +110,7 @@ CDIHandler::InitInput(HWND _hWnd)
 	m_diafGame.dwActionSize    = sizeof(DIACTION);
 	m_diafGame.dwDataSize      = NUMBER_OF_GAMEACTIONS * sizeof(DWORD);
 	m_diafGame.guidActionMap   = g_guidApp;
-	m_diafGame.dwGenre         = DIVIRTUAL_ARCADE_PLATFORM;
+	m_diafGame.dwGenre         = 0x22000000 /* DIVIRTUAL_ARCADE_PLATFORM */;
 	m_diafGame.dwNumActions    = NUMBER_OF_GAMEACTIONS;
 	m_diafGame.rgoAction       = m_rgGameAction;
 	m_diafGame.lAxisMin        = -100;
@@ -489,3 +489,4 @@ CDIHandler::InputAddDeviceCB(	CMultiplayerInputDeviceManager::PlayerInfo* pPlaye
 
 	return S_OK;
 }
+

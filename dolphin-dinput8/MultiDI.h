@@ -12,7 +12,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 #endif
 
-#include "dinput.h"
+#include <dinput.h>
 
 //-----------------------------------------------------------------------------
 // Miscellaneous helper functions
@@ -144,3 +144,4 @@ public:
 };
 
 #endif
+
