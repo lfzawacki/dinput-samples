@@ -262,6 +262,7 @@ HRESULT CMultiplayerInputDeviceManager::BuildDeviceList()
      ZeroMemory( m_pDeviceList, m_dwMaxDevices*sizeof(DeviceInfo) );
 
     // Enumerate available devices for any user.
+    printf("Building device list\n");
     HRESULT rs = m_pDI->EnumDevicesBySemantics( NULL, m_pdiaf, StaticEnumSuitableDevicesCB,
                                    this, DIEDBSFL_ATTACHEDONLY );
 
@@ -281,8 +282,12 @@ BOOL CALLBACK CMultiplayerInputDeviceManager::StaticEnumSuitableDevicesCB( LPCDI
                                                                DWORD dwFlags, DWORD dwDeviceRemaining,
                                                                VOID* pContext )
 {
+    printf("%s, pdidDevice= %p, dwFlags= 0x08%x, dwDeviceRemaining= %d\n",
+            pdidi->tszProductName,pdidDevice,dwFlags,dwDeviceRemaining);
+
     // Add the device to the device manager's internal list
     CMultiplayerInputDeviceManager* pInputDeviceManager = (CMultiplayerInputDeviceManager*)pContext;
+
     return pInputDeviceManager->EnumDevice( pdidi, pdidDevice,
                                             dwFlags, dwDeviceRemaining );
 }
@@ -1047,6 +1052,4 @@ HRESULT DXUtil_WriteStringRegKey( HKEY hKey, LPCTSTR strRegName,
 
 	return S_OK;
 }
-
-
 
