@@ -16,7 +16,13 @@ enum_semantics: enum_semantics.cpp
 enum_keyboard: enum_keyboard.cpp
 	$(CC)  -o $@.exe $^ -ldinput8 -ldxguid
 
+enum_mouse: enum_mouse.cpp
+	$(CC)  -o $@.exe $^ -ldinput8 -ldxguid
+
 setactionmap: setaction.cpp
+	$(CC)  -o $@.exe $^ -ldinput8 -ldxguid
+
+devices_test: devices_test.cpp
 	$(CC)  -o $@.exe $^ -ldinput8 -ldxguid
 
 copy:
@@ -24,4 +30,3 @@ copy:
 
 clean:
 	rm *.exe
-
