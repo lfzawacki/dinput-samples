@@ -34,3 +34,19 @@ const char* HRESULTExplain(HRESULT hr)
     }
 }
 
+const char* to_binary(unsigned int hex)
+{
+    static char buffer[256];
+    int index = 39;
+    for (int i=0; i < 32; i++) {
+        buffer[index] = 48 + (hex % 2);
+        index--;
+        if ((index % 5)==0) {
+            buffer[index] = ' ';
+            index--;
+        }
+        hex /= 2;
+    }
+    buffer[40] = '\0';
+    return buffer;
+}
