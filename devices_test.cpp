@@ -100,6 +100,50 @@ static DIACTION g_commands_fps[]=
 static const GUID ACTIONMAP_GUID =
 { 0x0, 0x1, 0x2, { 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa } };
 
+/* This function is a helper to convert a GUID into any possible DInput GUID out there */
+const char *_dump_dinput_GUID(const GUID guid) {
+    unsigned int i;
+    static const struct {
+	const GUID guid;
+	const char *name;
+    } guids[] = {
+#define FE(x) { x, #x}
+	FE(GUID_XAxis),
+	FE(GUID_YAxis),
+	FE(GUID_ZAxis),
+	FE(GUID_RxAxis),
+	FE(GUID_RyAxis),
+	FE(GUID_RzAxis),
+	FE(GUID_Slider),
+	FE(GUID_Button),
+	FE(GUID_Key),
+	FE(GUID_POV),
+	FE(GUID_Unknown),
+	FE(GUID_SysMouse),
+	FE(GUID_SysKeyboard),
+	FE(GUID_Joystick),
+	FE(GUID_ConstantForce),
+	FE(GUID_RampForce),
+	FE(GUID_Square),
+	FE(GUID_Sine),
+	FE(GUID_Triangle),
+	FE(GUID_SawtoothUp),
+	FE(GUID_SawtoothDown),
+	FE(GUID_Spring),
+	FE(GUID_Damper),
+	FE(GUID_Inertia),
+	FE(GUID_Friction),
+	FE(GUID_CustomForce)
+#undef FE
+    };
+    for (i = 0; i < (sizeof(guids) / sizeof(guids[0])); i++) {
+	if (IsEqualGUID(guids[i].guid, guid)) {
+	    return guids[i].name;
+	}
+    }
+    return debugstr_guid(&guid);
+}
+
 void _dump_diactionformatA(LPDIACTIONFORMATA lpdiActionFormat) {
     unsigned int i;
 
@@ -148,7 +192,7 @@ type: %X sub: %X\nguidFF: %s\nUsagePage %d\nUsage %d\n",
 BOOL CALLBACK
 enumObjectsCallback(const DIDEVICEOBJECTINSTANCE* instance, VOID* context)
 {
-    printf("%32s ofs: 0x%03x", instance->tszName, instance->dwOfs);
+    printf("%32s ofs: 0x%03x type: 0x%03x %11s", instance->tszName, instance->dwOfs, DIDFT_GETINSTANCE(instance->dwType), _dump_dinput_GUID(instance->guidType));
 
 #define X(x) if (instance->dwType & x) printf(" | "#x"");
     X(DIDFT_RELAXIS)
@@ -217,7 +261,7 @@ BOOL CALLBACK EnumSemanticsCallback //Callback function that receive DirectInput
     hr = lpdid->BuildActionMap(&g_ActionFormat,NULL,DIDBAM_INITIALIZE);
     _dump_diactionformatA(&g_ActionFormat);
 
-      return DIENUM_CONTINUE;
+    return DIENUM_CONTINUE;
 
 }
 
@@ -247,31 +291,31 @@ int main()
 
     printf("Space combat enumeration\n------------\n");
     hr=gp_DI->EnumDevicesBySemantics
-       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES);
+       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES );
 
-    if(FAILED(hr)) printf("Failed?\n");
+//    if(FAILED(hr)) printf("Failed?\n");
 
-    g_ActionFormat.dwNumActions = ARRAYSIZE(g_commands_driving);
-    g_ActionFormat.dwDataSize = 4 * g_ActionFormat.dwNumActions;
-    g_ActionFormat.rgoAction = g_commands_driving;
-    g_ActionFormat.dwGenre = DIVIRTUAL_DRIVING_RACE;
+//    g_ActionFormat.dwNumActions = ARRAYSIZE(g_commands_driving);
+//    g_ActionFormat.dwDataSize = 4 * g_ActionFormat.dwNumActions;
+//    g_ActionFormat.rgoAction = g_commands_driving;
+//    g_ActionFormat.dwGenre = DIVIRTUAL_DRIVING_RACE;
 
-    printf("Driving race enumeration\n------------\n");
-    hr=gp_DI->EnumDevicesBySemantics
-       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES);
+//    printf("Driving race enumeration\n------------\n");
+//    hr=gp_DI->EnumDevicesBySemantics
+//       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES);
 
-    if(FAILED(hr)) printf("Failed?\n");
+//    if(FAILED(hr)) printf("Failed?\n");
 
-    g_ActionFormat.dwNumActions = ARRAYSIZE(g_commands_fps);
-    g_ActionFormat.dwDataSize = 4 * g_ActionFormat.dwNumActions;
-    g_ActionFormat.rgoAction = g_commands_fps;
-    g_ActionFormat.dwGenre = DIVIRTUAL_FIGHTING_FPS;
+//    g_ActionFormat.dwNumActions = ARRAYSIZE(g_commands_fps);
+//    g_ActionFormat.dwDataSize = 4 * g_ActionFormat.dwNumActions;
+//    g_ActionFormat.rgoAction = g_commands_fps;
+//    g_ActionFormat.dwGenre = DIVIRTUAL_FIGHTING_FPS;
 
-    printf("First person shooter enumeration\n------------\n");
-    hr=gp_DI->EnumDevicesBySemantics
-       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES);
+//    printf("First person shooter enumeration\n------------\n");
+//    hr=gp_DI->EnumDevicesBySemantics
+//       (NULL, &g_ActionFormat, EnumSemanticsCallback, NULL, DIEDBSFL_AVAILABLEDEVICES);
 
-    if(FAILED(hr)) printf("Failed?\n");
+//    if(FAILED(hr)) printf("Failed?\n");
 
     return 0;
 }
